@@ -53,8 +53,7 @@ var initialData = {
         "contents": "ugh."
       },
       // List of comments on the post
-      "comments": [
-        {
+      "comments": [{
           // The author of the comment.
           "author": new ObjectID("000000000000000000000002"),
           // The contents of the comment.
@@ -143,7 +142,7 @@ function resetDatabase(db, cb) {
       // Use myself as a callback.
       resetCollection(db, collection, processNextCollection);
     } else {
-      cb();
+      addIndexes(db, cb);
     }
   }
 
@@ -153,7 +152,7 @@ function resetDatabase(db, cb) {
 
 // Check if called directly via 'node', or required() as a module.
 // http://stackoverflow.com/a/6398335
-if(require.main === module) {
+if (require.main === module) {
   // Called directly, via 'node src/resetdatabase.js'.
   // Connect to the database, and reset it!
   var MongoClient = require('mongodb').MongoClient;
@@ -173,4 +172,13 @@ if(require.main === module) {
 } else {
   // require()'d.  Export the function.
   module.exports = resetDatabase;
+}
+
+/**
+ * Adds any desired indexes to the database.
+ */
+function addIndexes(db, cb) {
+  db.collection('feedItems').createIndex({
+    "contents.contents": "text"
+  }, null, cb);
 }
